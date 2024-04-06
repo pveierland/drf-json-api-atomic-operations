@@ -113,7 +113,8 @@ class AtomicOperationView(APIView):
         obj_ids = []
         for _serializer in bulk_operation_data["serializer_collection"]:
             obj_ids.append(_serializer.instance.pk)
-            self.response_data.append(_serializer.data)
+            self.response_data.append(
+                _serializer.__class__(instance=_serializer.instance).data)
         bulk_operation_data["serializer_collection"][0].Meta.model.objects.filter(
             pk__in=obj_ids).delete()
 
