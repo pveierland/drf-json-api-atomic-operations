@@ -122,7 +122,7 @@ class AtomicOperationView(APIView):
         if bulk_operation_data["next_operation_code"] != current_operation_code or bulk_operation_data["next_resource_type"] != serializer.initial_data["type"]:
             if current_operation_code == "add":
                 self.perform_bulk_create(bulk_operation_data)
-            elif current_operation_code == "delete":
+            elif current_operation_code == "remove":
                 self.perform_bulk_delete(bulk_operation_data)
             else:
                 # TODO: update in bulk requires more logic cause it could be a partial update and every field differs pers instance.
