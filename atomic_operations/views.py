@@ -27,11 +27,6 @@ class AtomicOperationView(APIView):
     sequential = True
     response_data: List[Dict] = []
 
-    # TODO: proof how to check permissions for all operations
-    # permission_classes = TODO
-    # call def check_permissions for `add` operation
-    # call def check_object_permissions for `update` and `remove` operation
-
     def get_serializer_classes(self) -> Dict:
         if self.serializer_classes:
             return self.serializer_classes
@@ -160,6 +155,14 @@ class AtomicOperationView(APIView):
                     resource_type=obj["type"],
                     partial=True if "update" in operation_code else False
                 )
+
+                if serializer.instance:
+                    self.check_object_permissions(
+                        request=self.request,
+                        obj=serializer.instance,
+                    )
+                else:
+                    self.check_permissions(request=self.request)
 
                 if self.sequential:
                     self.handle_sequential(serializer, operation_code)
