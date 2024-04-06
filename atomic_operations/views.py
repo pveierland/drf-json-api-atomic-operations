@@ -129,8 +129,8 @@ class AtomicOperationView(APIView):
                 # Then we can't do a bulk operation. This is only possible for instances which changes the same field(s).
                 # Maybe the anylsis of this takes longer than simple handling updates in sequential mode.
                 # For now we handle updates always in sequential mode
-                self.handle_sequential(
-                    bulk_operation_data["serializer_collection"][0], current_operation_code)
+                for serializer in bulk_operation_data["serializer_collection"]:
+                    self.handle_sequential(serializer, current_operation_code)
             bulk_operation_data["serializer_collection"] = []
 
     def perform_operations(self, parsed_operations: List[Dict]):
