@@ -89,7 +89,21 @@ class AtomicOperationView(APIView):
 
     def handle_sequential(self, serializer, operation_code):
         if operation_code in ["add", "update", "update-relationship"]:
-            serializer.is_valid(raise_exception=True)
+            try:
+                serializer.is_valid(raise_exception=True)
+            except Exception as error:
+                raise UnprocessableEntity([
+                    {
+                        "id": "validation-error",
+                        "detail": str(error),
+                        "source": {
+                            "pointer": f"/{ATOMIC_OPERATIONS}/data/id"
+                        },
+                        "status": "422"
+                    }
+                ]
+                )
+
             serializer.save()
             if operation_code != "update-relationship":
                 self.response_data.append(serializer.data)
@@ -101,7 +115,21 @@ class AtomicOperationView(APIView):
         objs = []
         model_class = bulk_operation_data["serializer_collection"][0].Meta.model
         for _serializer in bulk_operation_data["serializer_collection"]:
-            _serializer.is_valid(raise_exception=True)
+            try:
+                _serializer.is_valid(raise_exception=True)
+            except Exception as error:
+                raise UnprocessableEntity([
+                    {
+                        "id": "validation-error",
+                        "detail": str(error),
+                        "source": {
+                            "pointer": f"/{ATOMIC_OPERATIONS}/data/id"
+                        },
+                        "status": "422"
+                    }
+                ]
+                )
+
             instance = model_class(**_serializer.validated_data)
             objs.append(instance)
             self.response_data.append(
